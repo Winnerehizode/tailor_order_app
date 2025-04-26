@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SmartFit Order Form</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="form-card">
+    <div class="logo">SF</div>
+    <h1>Place Your Order</h1>
+    <form id="orderForm">
+      <label>Full Name<input type="text" id="fullName" required /></label>
+      <label>Phone Number<input type="tel" id="phone" required /></label>
+      <label>Dress Style<textarea id="style" rows="2" required></textarea></label>
+      <label>Measurements<input type="text" id="measurements" placeholder="e.g. Bust: 34in, Waist: 28in" required /></label>
+      <label>Pickup Date<input type="date" id="dueDate" required /></label>
+      <button type="submit">Submit Order</button>
+    </form>
+    <div id="message" class="confirm"></div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
