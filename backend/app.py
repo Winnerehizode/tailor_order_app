@@ -1,47 +1,57 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import json
-from pathlib import Path
+import os
 
-app = Flask(
-    __name__,
-    static_folder="../frontend",
-    static_url_path=""
-)
+app = Flask(__name__)
+CORS(app)
 
-DATA_FILE = Path(__file__).parent / "orders.json"
+ORDERS_FILE = 'orders.json'
 
-if not DATA_FILE.exists():
-    DATA_FILE.write_text("[]", encoding="utf-8")
-
+# Helper function to load orders
 def load_orders():
-    with open(DATA_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+    if os.path.exists(ORDERS_FILE):
+        with open(ORDERS_FILE, 'r') as f:
+            return json.load(f)
+    else:
+        return []
 
+# Helper function to save orders
 def save_orders(orders):
-    with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(orders, f, indent=2)
+    with open(ORDERS_FILE, 'w') as f:
+        json.dump(orders, f, indent=4)
 
-@app.route("/")
-def serve_frontend():
-    return send_from_directory(app.static_folder, "index.html")
+@app.route('/orders', methods=['GET'])
+def get_orders():
+    orders = load_orders()
+    return jsonify(orders)
 
-@app.route("/submit-order", methods=["POST"])
-def submit_order():
+@app.route('/orders', methods=['POST'])
+def create_order():
     data = request.get_json()
-    required = ["fullName", "phone", "style", "measurements", "dueDate"]
-    for field in required:
-        if not data.get(field):
-            return jsonify({"error": f"Missing {field}"}), 400
+    if not data:
+        return jsonify({'error': 'No data provided'}), 400
 
     orders = load_orders()
-    orders.append(data)
+
+    new_order = {
+        "name": data.get('name'),
+        "phone": data.get('phone'),
+        "bust": data.get('bust'),
+        "waist": data.get('waist'),
+        "hips": data.get('hips'),
+        "length": data.get('length'),
+        "sleeve": data.get('sleeve'),
+        "design": data.get('design')
+    }
+
+    orders.append(new_order)
     save_orders(orders)
-    return jsonify({"message": "Order received", "order": data}), 201
 
-@app.route("/orders", methods=["GET"])
-def get_orders():
-    return jsonify(load_orders())
+    return jsonify({'message': 'Order created successfully!'}), 201
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     print("Starting SmartFit API on http://localhost:5000")
     app.run(debug=True)
+
+
