@@ -15,7 +15,7 @@ document.getElementById('orderForm').addEventListener('submit', async (e) => {
   };
 
   try {
-    const response = await fetch('https://your-backend-url.onrender.com/orders', {
+    const response = await fetch('https://smart-fit-rexp.onrender.com/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(order)
