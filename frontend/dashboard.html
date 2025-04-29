@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SmartFit - Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      font-family: 'Lora', serif;
+      background: #f8f4ef;
+      padding: 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      font-family: 'Playfair Display', serif;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 2rem;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+
+    th, td {
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f0e8dc;
+    }
+  </style>
+</head>
+<body>
+  <h1>Customer Orders Dashboard</h1>
+
+  <table id="ordersTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Bust</th>
+        <th>Waist</th>
+        <th>Hips</th>
+        <th>Length</th>
+        <th>Sleeve</th>
+        <th>Design</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Orders will go here -->
+    </tbody>
+  </table>
+
+  <script>
+    async function loadOrders() {
+      try {
+        const response = await fetch('https://smart-fit-rexp.onrender.com/orders');
+        const orders = await response.json();
+        const tbody = document.querySelector('#ordersTable tbody');
+
+        orders.forEach(order => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${order.name}</td>
+            <td>${order.phone}</td>
+            <td>${order.bust || ''}</td>
+            <td>${order.waist || ''}</td>
+            <td>${order.hips || ''}</td>
+            <td>${order.length || ''}</td>
+            <td>${order.sleeve || ''}</td>
+            <td>${order.design}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      } catch (err) {
+        console.error('Error loading orders:', err);
+        document.body.innerHTML += '<p style="color: red;">Failed to load orders.</p>';
+      }
+    }
+
+    loadOrders();
+  </script>
+</body>
+</html>
