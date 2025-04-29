@@ -1,45 +1,50 @@
 async function fetchOrders() {
+  const container = document.getElementById('ordersContainer');
+  // Show a loading state
+  container.innerHTML = '<p>Loading orders…</p>';
+
   try {
     const response = await fetch('https://smart-fit-rexp.onrender.com/orders');
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.status}`);
+    }
+
     const orders = await response.json();
+    container.innerHTML = '';  // Clear loading text
 
-    const ordersContainer = document.getElementById('ordersContainer');
-    ordersContainer.innerHTML = '';
-
-    if (orders.length === 0) {
-      ordersContainer.innerHTML = '<p>No orders found.</p>';
+    if (!orders.length) {
+      container.innerHTML = '<p>No orders found.</p>';
       return;
     }
 
     orders.forEach(order => {
-      const div = document.createElement('div');
-      div.className = 'order';
+      const card = document.createElement('div');
+      card.classList.add('order-card');  // define this in CSS
 
-      div.innerHTML = `
+      card.innerHTML = `
         <h3>${order.name}</h3>
         <p><strong>Phone:</strong> ${order.phone}</p>
         <p><strong>Design:</strong> ${order.design}</p>
         <p><strong>Measurements:</strong></p>
-        <ul>
-          <li>Bust: ${order.bust || order.measurements?.bust || 'N/A'}</li>
-          <li>Waist: ${order.waist || order.measurements?.waist || 'N/A'}</li>
-          <li>Hips: ${order.hips || order.measurements?.hips || 'N/A'}</li>
-          <li>Length: ${order.length || order.measurements?.length || 'N/A'}</li>
-          <li>Sleeve: ${order.sleeve || order.measurements?.sleeve || 'N/A'}</li>
+        <ul class="measurements-list">  <!-- define styling in CSS -->
+          <li>Bust: ${order.bust || 'N/A'}</li>
+          <li>Waist: ${order.waist || 'N/A'}</li>
+          <li>Hips: ${order.hips || 'N/A'}</li>
+          <li>Length: ${order.length || 'N/A'}</li>
+          <li>Sleeve: ${order.sleeve || 'N/A'}</li>
         </ul>
       `;
 
-      ordersContainer.appendChild(div);
+      container.appendChild(card);
     });
-  } catch (error) {
-    console.error('Failed to fetch orders:', error);
-    const ordersContainer = document.getElementById('ordersContainer');
-    ordersContainer.innerHTML = '<p style="color: red;">Unable to load orders, please try again later.</p>';
+
+  } catch (err) {
+    console.error('Failed to fetch orders:', err);
+    container.innerHTML = '<p class="error">Unable to load orders. Please try again later.</p>';
   }
 }
 
-// Only run fetchOrders if we're on the orders page
-if (window.location.pathname.includes('orders.html')) {
+// Only run fetchOrders on the orders page
+if (window.location.pathname.endsWith('orders.html')) {
   document.addEventListener('DOMContentLoaded', fetchOrders);
 }
-

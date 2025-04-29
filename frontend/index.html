@@ -13,27 +13,22 @@
 
     <form id="orderForm">
       <label for="name">Name</label>
-      <input type="text" id="name" required>
+      <input type="text" id="name" required />
 
       <label for="phone">Phone Number</label>
-      <input type="text" id="phone" required>
+      <input type="text" id="phone" required />
 
       <h2>Measurements</h2>
-
       <label for="bust">Bust</label>
-      <input type="text" id="bust" required>
-
+      <input type="text" id="bust" required />
       <label for="waist">Waist</label>
-      <input type="text" id="waist" required>
-
+      <input type="text" id="waist" required />
       <label for="hips">Hips</label>
-      <input type="text" id="hips" required>
-
+      <input type="text" id="hips" required />
       <label for="length">Length</label>
-      <input type="text" id="length" required>
-
+      <input type="text" id="length" required />
       <label for="sleeve">Sleeve Length</label>
-      <input type="text" id="sleeve" required>
+      <input type="text" id="sleeve" required />
 
       <label for="design">Design Description</label>
       <textarea id="design" required></textarea>
@@ -42,11 +37,43 @@
     </form>
 
     <div class="confirm" id="confirmMessage"></div>
-    <a href="orders.html" class="view-orders">View Orders</a>
+    <a href="dashboard.html" class="view-orders">View Orders</a>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    document.getElementById('orderForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const form = e.target;
+
+      const payload = {
+        name:    form.name.value,
+        phone:   form.phone.value,
+        bust:    form.bust.value,
+        waist:   form.waist.value,
+        hips:    form.hips.value,
+        length:  form.length.value,
+        sleeve:  form.sleeve.value,
+        design:  form.design.value,
+      };
+
+      try {
+        const resp = await fetch('https://smart-fit-rexp.onrender.com/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await resp.json();
+        if (!resp.ok) throw new Error(result.error || 'Unknown error');
+
+        document.getElementById('confirmMessage').innerText = 
+          `Order for ${result.name} submitted successfully!`;
+        form.reset();
+      } catch (err) {
+        document.getElementById('confirmMessage').innerText = 
+          `Error: ${err.message}`;
+      }
+    });
+  </script>
 </body>
 </html>
-
-
